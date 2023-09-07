@@ -33,7 +33,6 @@ func NewFeed() *videos {
 }
 
 func (v *videos) Save(ctx context.Context, tx *gorm.DB, video *model.Video) error {
-
 	videor := video
 	return tx.Save(&videor).Error
 }
@@ -50,7 +49,6 @@ func (v *videos) GetVideosByUserID(ctx context.Context, userId int64) (*[]model.
 func (v *videos) GetVideosByLatestTime(ctx context.Context, latestTime time.Time) (*[]model.Video, time.Time, error) {
 	videos := make([]model.Video, 0)
 	logger.Debug(latestTime, "上一次时间")
-	//err := v.db.Model(&model.Video{}).Where("created_at < ?", latestTime).Order("created_at desc").Limit(30).Find(&videos).Error
 	err := v.db.Model(&model.Video{}).Order("created_at desc").Limit(30).Find(&videos).Error
 
 	if err != nil {
