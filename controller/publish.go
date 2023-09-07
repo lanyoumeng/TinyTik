@@ -49,7 +49,7 @@ func Publish(c *gin.Context) {
 	}
 
 	// 存储视频数据
-	videoPath := fmt.Sprintf("public/%s-%s", uuid.New().String(), videoHeader.Filename)
+	videoPath := fmt.Sprintf("public/%s-%s", uuid.New().String(), time.Now())
 
 	if err := c.SaveUploadedFile(videoHeader, videoPath); err != nil {
 		c.JSON(http.StatusInternalServerError, resp.Response{

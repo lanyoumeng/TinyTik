@@ -48,7 +48,8 @@ TinyTik
 ├─common          -- 通用的代码或功能
 ├─config          -- 配置文件
 ├─controller      -- 控制器（Controller）层，接受请求并处理响应
-├─dto             -- 数据传输（DTO）层，处理实体传输和响应数据的转换
+├─FFmpeg          -- 视频处理文件
+├─logs            -- 存放日志
 ├─middleware      -- 中间件层，处理请求处理前后的逻辑
 ├─model           -- 数据库实体（Model）层，处理数据库相关操作
 ├─public          -- 静态资源文件

@@ -5,6 +5,7 @@ import (
 	"TinyTik/router"
 	"TinyTik/utils/logger"
 	"fmt"
+	_ "net/http/pprof"
 	"os"
 	"path/filepath"
 	"sync"
@@ -18,6 +19,7 @@ var (
 )
 
 func main() {
+
 	// 加载配置
 	loadConfig()
 
@@ -59,6 +61,7 @@ func loadConfig() {
 		loadLogger()
 		// 配置redis
 		loadRedis()
+
 	})
 
 }

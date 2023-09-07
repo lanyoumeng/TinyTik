@@ -43,11 +43,29 @@ func (r *RelaRepo) GetRelationById(id int64, toId int64) (model.Relation, error)
 
 	rel := model.Relation{}
 	if err := r.DB.Where("user_id = ? AND to_user_id = ?", id, toId).First(&rel).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Debug("未找到记录")
+			return rel, nil
+		}
+
+		logger.Debug("发生其他错误:", err.Error())
 		return rel, err
+
 	}
+
 	return rel, nil
+
 }
 
+// func (r *RelaRepo) GetRelationById(id int64, toId int64) (model.Relation, error) {
+
+// 	rel := model.Relation{}
+// 	if err := r.DB.Where("user_id = ? AND to_user_id = ?", id, toId).First(&rel).Error; err != nil {
+// 		return rel, err
+// 	}
+// 	return rel, nil
+
+// }
 func (r *RelaRepo) GetFollowListById(id int64) ([]model.User, error) {
 	users := []model.User{}
 	res := r.DB.Model(&model.User{}).
@@ -81,23 +99,33 @@ func (r *RelaRepo) GetFriendListById(id int64) ([]model.User, error) {
 func (r *RelaRepo) UpdateRelation(user model.User, toUser model.User, follow byte) error {
 	// 执行事务
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-		logger.Debug("取消关注")
+		logger.Debug("更新关注信息")
+
 		// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
 		if err := tx.Model(&user).Updates(user).Error; err != nil {
+			logger.Debug("用户表更新关注信息失败")
+
 			// 返回任何错误都会回滚事务
 			return err
 		}
 
 		if err := tx.Model(&toUser).Updates(toUser).Error; err != nil {
-			logger.Debug("取消关注失败")
+			logger.Debug("用户表更新关注信息失败")
 			return err
 		}
+
 		// 更新关系表
 		rel, err := r.GetRelationById(user.Id, toUser.Id)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			rel.UserId = user.Id
-			rel.ToUserId = toUser.Id
+		// if errors.Is(err, gorm.ErrRecordNotFound) {
+		// 	rel.UserId = user.Id
+		// 	rel.ToUserId = toUser.Id
+		// }
+		if err != nil {
+			return err
 		}
+		rel.UserId = user.Id
+		rel.ToUserId = toUser.Id
+
 		rel.Status = follow
 		if err := tx.Save(&rel).Error; err != nil {
 			return err
