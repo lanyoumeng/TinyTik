@@ -2,7 +2,6 @@ package controller
 
 import (
 	"TinyTik/common"
-	"TinyTik/model"
 	"TinyTik/resp"
 	"TinyTik/service"
 	"TinyTik/utils/logger"
@@ -12,11 +11,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/spf13/viper"
 )
 
 type VideoListResponse struct {
@@ -48,44 +44,7 @@ func Publish(c *gin.Context) {
 		logger.Debug("user not exist")
 	}
 
-	// 存储视频数据
-	videoPath := fmt.Sprintf("public/%s-%s", uuid.New().String(), time.Now())
-
-	if err := c.SaveUploadedFile(videoHeader, videoPath); err != nil {
-		c.JSON(http.StatusInternalServerError, resp.Response{
-			StatusCode: -1,
-			StatusMsg:  "Save file err",
-		})
-		return
-	}
-	//压缩视频
-	// videoPath, err = compressVideo(videoPath)
-	// if err != nil {
-	// 	logger.Debug("compressVideo false:", err)
-	// 	return
-	// }
-
-	urlPre := viper.GetString("server.urlPre")
-
-	playUrl := fmt.Sprintf("%s%s", urlPre, videoPath)
-
-	// 截取视频封面
-	coverPath := generateVideoCover(videoPath)
-
-	coverUrl := fmt.Sprintf("%s%s", urlPre, coverPath)
-	logger.Debug(coverPath)
-
-	var video model.Video
-	video.AuthorId = userId
-	video.CoverUrl = coverUrl
-	//video.CoverUrl = "http://localhost:8080/public/3.png"
-	video.CreatedAt = time.Now()
-	video.PlayUrl = playUrl
-	video.Title = title
-	video.UpdatedAt = time.Now()
-
-	// 存储视频信息和封面路径，这里可以将视频和封面路径存储到数据库中
-	err = service.NewVideo().Publish(c, &video)
+	err = service.NewVideo().Publish(c, title, videoHeader, userId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp.Response{
