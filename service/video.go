@@ -6,13 +6,20 @@ import (
 	"TinyTik/repository"
 	"TinyTik/utils/logger"
 	"fmt"
+	"mime/multipart"
+	"os"
+	"os/exec"
 	"strconv"
+	"strings"
 
 	"context"
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +39,7 @@ type VideoList struct {
 
 type FeedService interface {
 	Feed(c context.Context, latestTime time.Time, userId int64) (*[]VideoList, time.Time, error)
-	Publish(c context.Context, video *model.Video) error
+	Publish(c *gin.Context, title string, videoHeader *multipart.FileHeader, userId int64) error
 	PublishList(c context.Context, userId int64) (*[]VideoList, error)
 	GetRespVideo(ctx context.Context, videoList *[]model.Video, userId int64) (*[]VideoList, error)
 
@@ -73,11 +80,48 @@ func (v *VideoList) Feed(c context.Context, latestTime time.Time, userId int64) 
 
 }
 
-func (v *VideoList) Publish(c context.Context, video *model.Video) error {
+// err = service.NewVideo().Publish(c, title, videoHeader, userId)
+func (v *VideoList) Publish(c *gin.Context, title string, videoHeader *multipart.FileHeader, userId int64) error {
+	// 存储视频数据
+	videoPath := fmt.Sprintf("public/%s-%s", uuid.New().String(), time.Now())
+
+	if err := c.SaveUploadedFile(videoHeader, videoPath); err != nil {
+		logger.Debug("Save file err:", err)
+		return err
+	}
+	//压缩视频
+	videoPath, err := compressVideo(videoPath)
+	if err != nil {
+		logger.Debug("compressVideo false:", err)
+		return err
+	}
+
+	urlPre := viper.GetString("server.urlPre")
+
+	playUrl := fmt.Sprintf("%s%s", urlPre, videoPath)
+
+	// 截取视频封面
+	coverPath, err := generateVideoCover(videoPath)
+	if err != nil {
+		logger.Debug("generateVideoCover false:", err)
+		return err
+	}
+
+	coverUrl := fmt.Sprintf("%s%s", urlPre, coverPath)
+	logger.Debug(coverPath)
+
+	var video model.Video
+	video.AuthorId = userId
+	video.CoverUrl = coverUrl
+	//video.CoverUrl = "http://localhost:8080/public/3.png"
+	video.CreatedAt = time.Now()
+	video.PlayUrl = playUrl
+	video.Title = title
+	video.UpdatedAt = time.Now()
 
 	db := common.GetDB()
-	err := db.Transaction(func(tx *gorm.DB) error {
-		err := repository.NewFeed().Save(c, tx, video)
+	err = db.Transaction(func(tx *gorm.DB) error {
+		err := repository.NewFeed().Save(c, tx, &video)
 		if err != nil {
 			return err
 		}
@@ -91,6 +135,68 @@ func (v *VideoList) Publish(c context.Context, video *model.Video) error {
 	}
 
 	return nil
+}
+
+// 压缩视频
+func compressVideo(inputVideoPath string) (string, error) {
+	outputVideoPath := strings.TrimSuffix(inputVideoPath, ".mp4") + "CMP.mp4"
+	command := []string{
+		"-i", inputVideoPath,
+		"-c:v", "libx264",
+		//"-b:v", "1M", // 使用比特率代替 -crf
+		"-crf", "43", //较高的CRF值会减小文件大小但可能降低视频质量
+		"-y", // This option enables overwriting without asking
+		outputVideoPath,
+	}
+	cmd := exec.Command("ffmpeg", command...)
+
+	// 打开已存在的日志文件，如果不存在则创建
+	logFile, err := os.OpenFile("logs/video.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return outputVideoPath, err
+	}
+	defer logFile.Close()
+
+	cmd.Stderr = logFile // 将stderr重定向到指定的日志文件
+	// cmd.Stderr = os.Stderr // 将stderr重定向到控制台以查看错误消息
+
+	err = cmd.Run()
+	if err != nil {
+		logger.Debug("Error compressing video:", err)
+		return outputVideoPath, err
+	}
+
+	return outputVideoPath, nil
+}
+
+// 截取封面
+func generateVideoCover(videoPath string) (string, error) {
+	// 使用 ffmpeg 获取视频的第一帧作为封面
+	coverFilename := strings.TrimSuffix(videoPath, ".mp4") + "_cover.jpg"
+	command := []string{
+		"-i", videoPath,
+		"-ss", "00:00:01",
+		"-vframes", "1",
+		coverFilename,
+	}
+	cmd := exec.Command("ffmpeg", command...)
+
+	// 打开已存在的日志文件，如果不存在则创建
+	logFile, err := os.OpenFile("logs/video.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return "", err
+	}
+	defer logFile.Close()
+
+	cmd.Stderr = logFile // 将stderr重定向到指定的日志文件
+	//cmd.Stderr = os.Stderr // Redirect stderr to console for error messages
+
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("Error generating cover:", err)
+		return "", err
+	}
+	return coverFilename, nil
 }
 
 func (v *VideoList) PublishList(c context.Context, userId int64) (*[]VideoList, error) {

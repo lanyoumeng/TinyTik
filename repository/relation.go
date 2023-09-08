@@ -57,15 +57,6 @@ func (r *RelaRepo) GetRelationById(id int64, toId int64) (model.Relation, error)
 
 }
 
-// func (r *RelaRepo) GetRelationById(id int64, toId int64) (model.Relation, error) {
-
-// 	rel := model.Relation{}
-// 	if err := r.DB.Where("user_id = ? AND to_user_id = ?", id, toId).First(&rel).Error; err != nil {
-// 		return rel, err
-// 	}
-// 	return rel, nil
-
-// }
 func (r *RelaRepo) GetFollowListById(id int64) ([]model.User, error) {
 	users := []model.User{}
 	res := r.DB.Model(&model.User{}).
