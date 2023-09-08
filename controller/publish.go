@@ -5,12 +5,8 @@ import (
 	"TinyTik/resp"
 	"TinyTik/service"
 	"TinyTik/utils/logger"
-	"fmt"
 	"net/http"
-	"os"
-	"os/exec"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -86,46 +82,4 @@ func PublishList(c *gin.Context) {
 			Videos: *videoList,
 		})
 	}
-}
-
-func generateVideoCover(videoPath string) string {
-	// 使用 ffmpeg 获取视频的第一帧作为封面
-	coverFilename := strings.TrimSuffix(videoPath, ".mp4") + "_cover.jpg"
-	command := []string{
-		"-i", videoPath,
-		"-ss", "00:00:01",
-		"-vframes", "1",
-		coverFilename,
-	}
-	cmd := exec.Command("ffmpeg", command...)
-	cmd.Stderr = os.Stderr // Redirect stderr to console for error messages
-
-	err := cmd.Run()
-	if err != nil {
-		fmt.Println("Error generating cover:", err)
-		return ""
-	}
-	return coverFilename
-}
-
-func compressVideo(inputVideoPath string) (string, error) {
-	outputVideoPath := strings.TrimSuffix(inputVideoPath, ".mp4") + "CMP.mp4"
-	command := []string{
-		"-i", inputVideoPath,
-		"-c:v", "libx264",
-		//"-b:v", "1M", // 使用比特率代替 -crf
-		"-crf", "18",
-		"-y", // This option enables overwriting without asking
-		outputVideoPath,
-	}
-	cmd := exec.Command("ffmpeg", command...)
-	cmd.Stderr = os.Stderr // Redirect stderr to console for error messages
-
-	err := cmd.Run()
-	if err != nil {
-		logger.Debug("Error compressing video:", err)
-		return outputVideoPath, err
-	}
-
-	return outputVideoPath, nil
 }

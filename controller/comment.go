@@ -24,7 +24,7 @@ type CommentActionResponse struct {
 	resp.CommentResponse `json:"comment,omitempty"`
 }
 
-var commentIdSequence = int64(0) //commentId的id号
+//var commentIdSequence = int64(0) //commentId的id号
 
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
