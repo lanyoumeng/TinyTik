@@ -2,7 +2,7 @@
 
 ## 1、相关资料
 
-**github仓库地址:** https://github.com/JiangH156/TinyTik
+**github仓库地址:** https://github.com/lanyoumeng/TinyTik
 
 
 ## 2、技术栈
@@ -20,7 +20,7 @@ Go版本：1.20
 | Bcrypt    | 密码加密服务         | https://godoc.org/golang.org/x/crypto/bcrypt |
 | Validator | 参数校验           | https://github.com/go-playground/validator |
 | Uuid      | ID生成           | https://github.com/google/uuid             |
-|FFmpeg     | 封面截取          |https://www.ffmpeg.org/download.html   |
+|FFmpeg     | 封面截取/视频压缩          |https://www.ffmpeg.org/download.html   |
 
 
 ## 3、团队分工
@@ -34,7 +34,7 @@ Go版本：1.20
 
 ## 4、项目管理
 
-github仓库地址：https://github.com/JiangH156/TinyTik 
+github仓库地址：https://github.com/lanyoumeng/TinyTik
 
 主分支：master 
 

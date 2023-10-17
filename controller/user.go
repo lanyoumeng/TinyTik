@@ -8,6 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// usersLoginInfo use map to store user info, and key is username+password for demo
+// user data will be cleared every time the server starts
+// test data: username=zhanglei, password=douyin
+// var usersLoginInfo = map[string]model.User{
+// 	"zhangleidouyin": {
+// 		Id:            1,
+// 		Name:          "zhanglei",
+// 		FollowCount:   10,
+// 		FollowerCount: 5,
+// 		IsFollow:      true,
+// 	},
+// }
+
 // 用户信息 GET /douyin/user/
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")

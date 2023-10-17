@@ -39,7 +39,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusBadRequest,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// UserAuth 存储信息
@@ -50,7 +50,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	creUserAuth := model.UserAuth{UserName: regAuth.UserName, Password: string(password)}
@@ -62,7 +62,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// User 存储信息
@@ -85,7 +85,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 
@@ -97,7 +97,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// 注册的用户，直接添加到redis缓存中
@@ -109,7 +109,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 
@@ -121,7 +121,7 @@ func (u *AuthService) Register(regAuth model.UserAuth) (id int64, token string, 
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// 注册成功，事务提交
@@ -143,7 +143,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 			return 0, "", common.LError{
 				HttpCode: http.StatusBadRequest,
 				Msg:      "User doesn't exist",
-				Err:      errors.New("User doesn't exist"),
+				Err:      errors.New("user doesn't exist"),
 			}
 		}
 		// 2.发生其他错误
@@ -151,7 +151,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// 账号密码校验
@@ -160,7 +160,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusBadRequest,
 			Msg:      "The account number or password is incorrect",
-			Err:      errors.New("The account number or password is incorrect"),
+			Err:      errors.New("the account number or password is incorrect"),
 		}
 	}
 
@@ -171,7 +171,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// 登录的用户，直接添加到redis缓存中
@@ -184,7 +184,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// json格式化user
@@ -194,7 +194,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 	// redis client
@@ -205,7 +205,7 @@ func (u *AuthService) Login(loginAuth model.UserAuth) (id int64, token string, l
 		return 0, "", common.LError{
 			HttpCode: http.StatusInternalServerError,
 			Msg:      "Internal server error",
-			Err:      errors.New("Internal server error"),
+			Err:      errors.New("internal server error"),
 		}
 	}
 
