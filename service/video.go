@@ -80,7 +80,7 @@ func (v *VideoList) Feed(c context.Context, latestTime time.Time, userId int64) 
 // err = service.NewVideo().Publish(c, title, videoHeader, userId)
 func (v *VideoList) Publish(c *gin.Context, title string, videoHeader *multipart.FileHeader, userId int64) error {
 	// 存储视频数据
-	videoPath := fmt.Sprintf("public/%s-%s", uuid.New().String(), time.Now())
+	videoPath := fmt.Sprintf("public/%s-%v", uuid.New().String(), time.Now().Unix())
 
 	if err := c.SaveUploadedFile(videoHeader, videoPath); err != nil {
 		logger.Debug("Save file err:", err)
