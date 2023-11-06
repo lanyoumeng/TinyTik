@@ -1,18 +1,31 @@
 # server
 server:
     port: 8080
-    urlPre:  http://8.130.16.80:8080/
+    urlPre:  http://139.224.32.57:8080/
+    #urlPre:  http://139.224.32.57:8081/
 
 # mysql
 datasource:
     username: root
     password: 321+-321ToM
-    host: 127.0.0.1
+    host: 127.0.0.1  
     port: 3306
     database: tinytik
     charset: utf8mb4
     parseTime: true
     loc: Asia/Shanghai
+
+# # mysql
+# datasource:
+#     username: root
+#     password: 321+-321ToM
+#     host: tinytik-mysql  # MySQL 容器的 IP 地址
+#     port: 3306  # MySQL 默认端口
+#     database: tinytik
+#     charset: utf8mb4
+#     parseTime: true
+#     loc: Asia/Shanghai
+
 
 # email
 email:
@@ -29,6 +42,14 @@ redis:
     password:
     db: 0
     expire: 24h # s m h d
+
+# #redis
+# redis:
+#     address: tinytik-redis
+#     port: 6379
+#     password:
+#     db: 0
+#     expire: 24h # s m h d
     
 
 # logger

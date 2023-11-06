@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	_ "go.uber.org/automaxprocs"
 )
 
 var (
